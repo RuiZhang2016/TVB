@@ -34,8 +34,8 @@ class TVB(GPy.core.Model):
     def _set_params(self,x):
         self.Ytilde = x[:self.num_data]
         self.beta = x[self.num_data:2*self.num_data]
-        self.kern._set_params_transformed(x[2*self.num_data:2*self.num_data + self.kern.num_params_transformed()])
-        self.tilted._set_params(x[2*self.num_data + self.kern.num_params_transformed():])
+        # self.kern._set_params_transformed(x[2*self.num_data:2*self.num_data + self.kern.num_params_transformed()])
+        self.tilted._set_params(x[2*self.num_data:])
 
         #compute approximate posterior mean and variance - this is q(f) in RassWill notation,
         # and p(f | \tilde y) in ours

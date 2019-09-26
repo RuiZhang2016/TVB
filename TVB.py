@@ -25,7 +25,7 @@ class TVB(GPy.core.Model):
         self.Ytilde = np.zeros(self.num_data)
         self.beta = np.zeros(self.num_data) + 0.1
 
-        self.ensure_default_constraints()
+        # self.ensure_default_constraints()
         self.constrain_positive('beta')
 
     def _set_params(self,x):

@@ -14,25 +14,25 @@ class classification(GPy.core.Model):
         self.X = X
         self.Y = Y
         if kern is None:
-            kern = GPy.kern.rbf(X.shape[1]) + GPy.kern.white(X.shape[1])
+            kern = GPy.kern.src.rbf.RBF(X.shape[1]) + GPy.kern.White(X.shape[1])
         self.kern = kern
         self.Y_sign = np.where(Y>0,1,-1)
         self.num_data, self.input_dim = self.X.shape
         self.no_K_grads_please = False
-        GPy.core.Model.__init__(self)
+        GPy.core.Model.__init__(self,'classification')
 
         self.Ytilde = np.zeros(self.num_data)
         self.beta = np.zeros(self.num_data) + 0.1
 
         self.tilted = tilted.Heaviside(self.Y, do_entropy=True)
 
-        self.ensure_default_constraints()
+        # self.ensure_default_constraints()
         self.constrain_positive('beta')
 
     def _set_params(self,x):
         self.Ytilde = x[:self.num_data]
         self.beta = x[self.num_data:2*self.num_data]
-        self.kern._set_params_transformed(x[2*self.num_data:])
+        # self.kern._set_params_transformed(x[2*self.num_data:])
 
         #compute approximate posterior mean and variance - this is q(f) in RassWill notation,
         # and p(f | \tilde y) in ours
@@ -60,7 +60,7 @@ class classification(GPy.core.Model):
         self.tilted.set_cavity(self.cavity_means, self.cavity_vars)
 
     def _get_params(self):
-        return np.hstack((self.Ytilde, self.beta, self.kern._get_params_transformed()))
+        return np.hstack((self.Ytilde, self.beta))
 
     def _get_param_names(self):
         return ['Ytilde%i'%i for i in range(self.num_data)] +\
@@ -279,10 +279,13 @@ if __name__=='__main__':
     Y[X[:, 0] < 1. / 4] = 0.
     #Y = np.random.permutation(Y)
     #pb.plot(X[:, 0], Y, 'kx')
-    k = GPy.kern.rbf(1) + GPy.kern.white(1, 1e-5)
+    k = GPy.kern.src.rbf.RBF(1) + GPy.kern.White(1, 1e-5)
     m = classification(X, Y, k.copy())
     m.constrain_positive('beta')
-    #m.randomize();     m.checkgrad(verbose=True)
+    m.randomize()
+    m.checkgrad(verbose=True)
+    params = np.hstack((np.zeros(N),np.ones(N)))
+    m._set_params(params)
     #m.optimize('bfgs', messages=1)#, max_iters=20, max_f_eval=20)
     #m.plot()
 

@@ -1,10 +1,15 @@
 # Copyright (c) 2014, James Hensman
 # Distributed under the terms of the GNU General public License, see LICENSE.txt
 
+import matplotlib
+matplotlib.use('TkAgg')
+
 import numpy as np
-import pylab as pb
+import matplotlib.pyplot as pb
 import GPy
-from classification2 import classification
+from classification1 import classification
+
+
 from mpl_toolkits.mplot3d import Axes3D
 pb.close('all')
 
@@ -28,11 +33,13 @@ X = np.linspace(-1,1,2)[:,None]*0.4
 
 #build tVB model
 k = GPy.kern.src.rbf.RBF(1) + GPy.kern.White(1, 0.01)
-m = classification(X,Y,k,link='heaviside')
+m = classification(X,Y,k)
 m.Ytilde = np.ones(2)
 m.constrain_fixed('rbf')
 m.constrain_fixed('white')
 m.randomize()
+params = np.hstack((np.zeros(2), np.ones(2)))
+m._set_params(params)
 m.optimize('bfgs')
 # m.optimize_restarts(verbose=False)
 
@@ -47,7 +54,7 @@ xmax = m.mu[0] + 3*np.sqrt(m.Sigma[0,0])
 ymin = m.mu[1] - 3*np.sqrt(m.Sigma[1,1])
 ymax = m.mu[1] + 3*np.sqrt(m.Sigma[1,1])
 print(xmin,xmax,ymin,ymax)
-raise Exception('Stop')
+
 ff_x, ff_y = np.mgrid[xmin:xmax:resolution * 1j,ymin:ymax:resolution * 1j]
 ff = np.vstack((ff_x.flatten(), ff_y.flatten())).T
 prior = mvn_pdf(ff, k.K(X)).reshape(resolution,resolution)
@@ -122,8 +129,6 @@ ax.set_xlim(xmin -1, xmax)
 ax.set_ylim(ymin , ymax+1)
 pb.tight_layout()
 pb.draw()
-
-
 # and a boring contour
 pb.figure()
 contours = np.linspace(0,post.max(),20)[1:]
@@ -132,7 +137,10 @@ contours = np.linspace(0,approx.max(),20)[1:]
 pb.contour(ff_x, ff_y, approx, contours, colors=approx_color)
 contours = np.linspace(0,tilted.max(),20)[1:]
 pb.contour(ff_x, ff_y, tilted, contours, colors=tilt_color)
+pb.show()
 
+pb.figure()
+input()
 
 
 
