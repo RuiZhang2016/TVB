@@ -28,7 +28,8 @@ class classification(TVB2):
     def plot(self):
         if self.X.shape[1]==1:
             pb.figure()
-            Xtest, xmin, xmax = GPy.util.plot.x_frame1D(self.X)
+            Xtest, xmin, xmax = GPy.plotting.matplot_dep.base_plots.x_frame1D(self.X)
+            Xtest = np.array([e[0] for e in Xtest])
             mu, var = self._predict_raw(Xtest)
             pb.plot(self.X, self.Y, 'kx', mew=1)
             pb.plot(Xtest, 0.5*(1+erf(mu/np.sqrt(2.*var))), linewidth=2)
@@ -54,7 +55,7 @@ if __name__=='__main__':
     Y = np.zeros(N)
     Y[X[:, 0] < 3. / 4] = 1.
     Y[X[:, 0] < 1. / 4] = 0.
-
+    Y = Y.reshape((-1,1))
     #build and optimize a model
     m = classification(X, Y)
     m.randomize();     m.checkgrad(verbose=True)

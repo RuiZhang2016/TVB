@@ -254,11 +254,10 @@ class classification(GPy.core.Model):
                 self.beta = beta_old
                 self.Ytilde = Ytilde_old
                 steplength /= 2.
-
-                print i, ll_new, '(failed, reducing step length)'
+                print(i, ll_new, '(failed, reducing step length)')
             else:
                 #sucess!
-                print i, ll_new
+                print(i, ll_new)
                 if (ll_new - ll_old) < 1e-6:
                     break # terminate
                 ll_old = self.log_likelihood()

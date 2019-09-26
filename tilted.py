@@ -177,7 +177,7 @@ if __name__=='__main__':
         probit.set_cavity(mu, sigma2)
         return probit.dN_Z_dsigma2
     m = GradientChecker(f,df,np.random.rand(N))
-    print 'N/Z wrt sigma2'
+    print('N/Z wrt sigma2')
     m.checkgrad(verbose=1)
 
     #gradcheck for mean wrt sigma2

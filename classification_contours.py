@@ -27,14 +27,14 @@ Y = np.ones(2)
 X = np.linspace(-1,1,2)[:,None]*0.4
 
 #build tVB model
-k = GPy.kern.rbf(1) + GPy.kern.white(1, 0.01)
+k = GPy.kern.src.rbf.RBF(1) + GPy.kern.White(1, 0.01)
 m = classification(X,Y,k,link='heaviside')
 m.Ytilde = np.ones(2)
 m.constrain_fixed('rbf')
 m.constrain_fixed('white')
 m.randomize()
-#m.optimize('bfgs')
-m.optimize_restarts()
+m.optimize('bfgs')
+# m.optimize_restarts(verbose=False)
 
 #build EP model
 #m_ep = GPy.models.GPClassification(X,Y, kernel=k)
@@ -46,6 +46,8 @@ xmin = m.mu[0] - 3*np.sqrt(m.Sigma[0,0])
 xmax = m.mu[0] + 3*np.sqrt(m.Sigma[0,0])
 ymin = m.mu[1] - 3*np.sqrt(m.Sigma[1,1])
 ymax = m.mu[1] + 3*np.sqrt(m.Sigma[1,1])
+print(xmin,xmax,ymin,ymax)
+raise Exception('Stop')
 ff_x, ff_y = np.mgrid[xmin:xmax:resolution * 1j,ymin:ymax:resolution * 1j]
 ff = np.vstack((ff_x.flatten(), ff_y.flatten())).T
 prior = mvn_pdf(ff, k.K(X)).reshape(resolution,resolution)

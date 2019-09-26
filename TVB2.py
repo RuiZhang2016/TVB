@@ -17,18 +17,18 @@ class TVB(GPy.core.Model):
         self.X = X
         self.tilted = tilted
         if kern is None:
-            kern = GPy.kern.rbf(X.shape[1]) + GPy.kern.white(X.shape[1])
+            kern = GPy.kern.src.rbf.RBF(X.shape[1]) + GPy.kern.White(X.shape[1])
         self.kern = kern
         self.num_data, self.input_dim = self.X.shape
 
         self.no_K_grads_please = False
 
-        GPy.core.Model.__init__(self)
+        GPy.core.Model.__init__(self,'TVB2')
 
         self.Ytilde = np.zeros(self.num_data)
         self.beta = np.zeros(self.num_data) + 0.1
 
-        self.ensure_default_constraints()
+        # self.ensure_default_constraints()
         self.constrain_positive('beta')
 
     def _set_params(self,x):
