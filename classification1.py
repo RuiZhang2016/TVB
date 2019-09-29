@@ -19,7 +19,7 @@ class classification(GPy.core.Model):
         self.Y_sign = np.where(Y>0,1,-1)
         self.num_data, self.input_dim = self.X.shape
         self.no_K_grads_please = False
-        GPy.core.Model.__init__(self,'classification')
+        GPy.core.Model.__init__(self,name='classification')
 
         self.Ytilde = np.zeros(self.num_data)
         self.beta = np.zeros(self.num_data) + 0.1
@@ -27,7 +27,7 @@ class classification(GPy.core.Model):
         self.tilted = tilted.Heaviside(self.Y, do_entropy=True)
 
         # self.ensure_default_constraints()
-        self.constrain_positive('beta')
+        # self.constrain_positive('beta')
 
     def _set_params(self,x):
         self.Ytilde = x[:self.num_data]
@@ -64,8 +64,7 @@ class classification(GPy.core.Model):
 
     def _get_param_names(self):
         return ['Ytilde%i'%i for i in range(self.num_data)] +\
-               ['beta%i'%i for i in range(self.num_data)] +\
-               self.kern._get_param_names_transformed()
+               ['beta%i'%i for i in range(self.num_data)]
 
     def alternative_log_likelihood(self):
         #ignore log 2 pi terms, they cancel.

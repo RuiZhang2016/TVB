@@ -49,6 +49,7 @@ class TVB(GPy.core.Model):
         self.cavity_means = np.dot(self.Sigma, self.beta*self.Ytilde )
         self.cavity_vars = np.diag(self.Sigma)
         #note that the cavity mean is now the posterior mean, and that the cavity var is the marginal posterior var.
+        self.mu = np.dot(self.Sigma, self.beta * self.Ytilde)
 
         #compute tilted distributions...
         self.tilted.set_cavity(self.cavity_means, self.cavity_vars)
@@ -58,9 +59,10 @@ class TVB(GPy.core.Model):
 
     def _get_param_names(self):
         return ['Ytilde%i'%i for i in range(self.num_data)] +\
-               ['beta%i'%i for i in range(self.num_data)] +\
-               self.kern._get_param_names_transformed() +\
+               ['beta%i'%i for i in range(self.num_data)] + \
                self.tilted._get_param_names()
+               # self.kern._get_param_names_transformed() +\
+
 
     def log_likelihood(self):
         #ignore log 2 pi terms, they cancel.

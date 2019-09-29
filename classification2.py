@@ -12,7 +12,7 @@ from TVB import TVB
 from TVB2 import TVB as TVB2
 
 class classification(TVB2):
-    def __init__(self, X, Y, kern=None, link='probit'):
+    def __init__(self, X, Y, kern=None, link='heaviside'):
         self.Y = Y
         if link=='probit':
             TVB2.__init__(self,X, tilted.Probit(Y.flatten()), kern)

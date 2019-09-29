@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General public License, see LICENSE.txt
 
 import matplotlib
-matplotlib.use('TkAgg')
+matplotlib.use("TkAgg")
 
 import numpy as np
 import matplotlib.pyplot as pb
@@ -38,10 +38,11 @@ m.Ytilde = np.ones(2)
 m.constrain_fixed('rbf')
 m.constrain_fixed('white')
 m.randomize()
-params = np.hstack((np.zeros(2), np.ones(2)))
+params = np.hstack((np.ones(2), np.ones(2)))
 m._set_params(params)
+print(m._get_param_names())
 m.optimize('bfgs')
-# m.optimize_restarts(verbose=False)
+# m.optimize_restarts(verbose=True)
 
 #build EP model
 #m_ep = GPy.models.GPClassification(X,Y, kernel=k)
@@ -57,7 +58,8 @@ print(xmin,xmax,ymin,ymax)
 
 ff_x, ff_y = np.mgrid[xmin:xmax:resolution * 1j,ymin:ymax:resolution * 1j]
 ff = np.vstack((ff_x.flatten(), ff_y.flatten())).T
-prior = mvn_pdf(ff, k.K(X)).reshape(resolution,resolution)
+prior = mvn_pdf(ff, k.K(X)).\
+    reshape(resolution,resolution)
 likelihood = ((ff_x>0)==Y[0]) * ((ff_y>0)==Y[1])
 post = likelihood*prior
 post /= post.sum()
@@ -128,7 +130,7 @@ ax.set_zlim(0,1)
 ax.set_xlim(xmin -1, xmax)
 ax.set_ylim(ymin , ymax+1)
 pb.tight_layout()
-pb.draw()
+pb.show(block=True)
 # and a boring contour
 pb.figure()
 contours = np.linspace(0,post.max(),20)[1:]
@@ -137,10 +139,8 @@ contours = np.linspace(0,approx.max(),20)[1:]
 pb.contour(ff_x, ff_y, approx, contours, colors=approx_color)
 contours = np.linspace(0,tilted.max(),20)[1:]
 pb.contour(ff_x, ff_y, tilted, contours, colors=tilt_color)
-pb.show()
+pb.show(block=True)
 
-pb.figure()
-input()
 
 
 
